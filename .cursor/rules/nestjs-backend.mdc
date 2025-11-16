@@ -1,0 +1,179 @@
+# NestJS Backend Patterns
+
+## Module Structure
+The backend follows NestJS modular architecture with clear separation of concerns.
+
+## Module Organization
+Each feature module follows this structure:
+```
+modules/[feature]/
+├── entities/           # TypeORM entities
+├── dtos/              # Data Transfer Objects
+│   ├── request/       # Request DTOs
+│   └── response/      # Response DTOs
+├── docs/              # API documentation
+├── [feature].controller.ts
+├── [feature].service.ts
+└── [feature].module.ts
+```
+
+## Entity Patterns
+- Use TypeORM decorators for database mapping
+- Define relationships between entities
+- Use proper column types and constraints
+- Implement soft deletes when needed
+
+## DTO Patterns
+- Separate request and response DTOs
+- Use class-validator for validation
+- Use class-transformer for serialization
+- Define clear interfaces for API contracts
+
+## Controller Patterns
+```typescript
+@Controller('comics')
+export class ComicsController {
+  constructor(private readonly comicsService: ComicsService) {}
+
+  @Get()
+  async findAll(@Query() query: QueryComicsDto): Promise<ComicsResponseDto> {
+    return this.comicsService.findAll(query);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: number): Promise<ComicResponseDto> {
+    return this.comicsService.findOne(id);
+  }
+
+  @Post()
+  async create(@Body() createComicDto: CreateComicDto): Promise<ComicResponseDto> {
+    return this.comicsService.create(createComicDto);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() updateComicDto: UpdateComicDto
+  ): Promise<ComicResponseDto> {
+    return this.comicsService.update(id, updateComicDto);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number): Promise<boolean> {
+    return this.comicsService.remove(id);
+  }
+}
+```
+
+## Service Patterns
+```typescript
+@Injectable()
+export class ComicsService {
+  constructor(
+    @InjectRepository(Comics)
+    private readonly comicsRepository: Repository<Comics>,
+  ) {}
+
+  async findAll(query: QueryComicsDto): Promise<ComicsResponseDto> {
+    const { page, limit, search, status, r18 } = query;
+
+    const queryBuilder = this.comicsRepository
+      .createQueryBuilder('comic')
+      .leftJoinAndSelect('comic.authors', 'author')
+      .leftJoinAndSelect('comic.artists', 'artist');
+
+    if (search) {
+      queryBuilder.where('comic.title ILIKE :search', { search: `%${search}%` });
+    }
+
+    if (status && status !== 'all') {
+      queryBuilder.andWhere('comic.status = :status', { status });
+    }
+
+    if (r18 !== undefined) {
+      queryBuilder.andWhere('comic.r18 = :r18', { r18 });
+    }
+
+    const [comics, total] = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      comics,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+}
+```
+
+## Global Configuration
+- Use ConfigModule for environment variables
+- Implement global middleware and interceptors
+- Use guards for authentication and authorization
+- Configure CORS and security headers
+
+## Database Configuration
+```typescript
+TypeOrmModule.forRoot({
+  type: 'postgres',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  synchronize: true,
+  autoLoadEntities: true,
+  entities: [/* entity classes */],
+})
+```
+
+## Error Handling
+- Use global exception filters
+- Implement proper HTTP status codes
+- Return consistent error responses
+- Log errors appropriately
+
+## Authentication & Authorization
+- Use Firebase Admin for authentication
+- Implement role-based guards
+- Use session management for user state
+- Protect sensitive endpoints
+
+## Examples from Codebase
+```typescript
+// Good: Entity definition
+@Entity('comics')
+export class Comics {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'varchar', length: 255 })
+  title: string;
+
+  @ManyToMany(() => Authors)
+  @JoinTable()
+  authors: Authors[];
+
+  @Column({ type: 'boolean', default: false })
+  r18: boolean;
+}
+
+// Good: DTO with validation
+export class CreateComicDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  authors: number[];
+
+  @IsBoolean()
+  r18: boolean;
+}
+```
+description:
+globs:
+alwaysApply: false
+---

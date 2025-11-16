@@ -1,0 +1,158 @@
+# UI Components Guidelines
+
+## Component Library
+The project uses shadcn/ui components built on top of Radix UI primitives with Tailwind CSS for styling.
+
+## Base UI Components
+All base UI components are located in `src/components/ui/` and follow the shadcn/ui pattern.
+
+## Component Structure
+```typescript
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const componentVariants = cva(
+  "base-classes",
+  {
+    variants: {
+      variant: {
+        default: "default-classes",
+        secondary: "secondary-classes",
+        // ...
+      },
+      size: {
+        default: "default-size",
+        sm: "small-size",
+        lg: "large-size",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface ComponentProps
+  extends React.HTMLAttributes<HTMLElement>,
+    VariantProps<typeof componentVariants> {
+  asChild?: boolean
+}
+
+const Component = React.forwardRef<HTMLElement, ComponentProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "element"
+    return (
+      <Comp
+        className={cn(componentVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Component.displayName = "Component"
+
+export { Component, componentVariants }
+```
+
+## Utility Functions
+Use the `cn()` utility from [lib/utils.ts](mdc:yuri-garden/src/lib/utils.ts) for class merging:
+```typescript
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+## Styling Guidelines
+- Use Tailwind CSS classes for styling
+- Use `class-variance-authority` for component variants
+- Use `tailwind-merge` for class conflict resolution
+- Follow the design system color tokens
+
+## Component Variants
+Define variants for different use cases:
+```typescript
+variants: {
+  variant: {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+    link: "text-primary underline-offset-4 hover:underline",
+  },
+  size: {
+    default: "h-10 px-4 py-2",
+    sm: "h-9 rounded-md px-3",
+    lg: "h-11 rounded-md px-8",
+    icon: "h-10 w-10",
+  },
+}
+```
+
+## Feature-Specific Components
+- Place feature-specific components in `src/features/[feature]/components/`
+- Use consistent naming patterns
+- Export from `index.ts` for clean imports
+- Follow the same styling patterns as base components
+
+## Component Composition
+- Use `asChild` prop for component composition
+- Forward refs when needed
+- Use Radix UI primitives for accessibility
+- Implement proper ARIA attributes
+
+## Loading States
+- Use consistent loading patterns
+- Implement skeleton loaders for better UX
+- Handle loading states in feature components
+
+## Examples from Codebase
+```typescript
+// Good: Button component with variants
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+
+// Good: Feature component using UI components
+const ComicCard = ({ comic }: { comic: Comic }) => {
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader>
+        <CardTitle>{comic.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <img src={comic.thumbnail} alt={comic.title} />
+      </CardContent>
+      <CardFooter>
+        <Button variant="outline" size="sm">
+          Read
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+```
+
+## Accessibility
+- Use semantic HTML elements
+- Implement proper keyboard navigation
+- Add ARIA labels and descriptions
+- Ensure color contrast compliance
+- Test with screen readers
+description:
+globs:
+alwaysApply: false
+---

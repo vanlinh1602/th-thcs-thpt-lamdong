@@ -1,0 +1,68 @@
+# TypeScript Guidelines
+
+## Basic Principles
+- Use English for all code and documentation
+- Always declare types for variables and functions (avoid `any`)
+- Use JSDoc to document public classes and methods
+- Don't leave blank lines within functions
+- One export per file
+
+## Nomenclature
+- **Classes**: PascalCase (e.g., `ComicCard`, `UserService`)
+- **Variables/Functions**: camelCase (e.g., `getComics`, `userSettings`)
+- **Files/Directories**: kebab-case (e.g., `comic-card.tsx`, `user-settings.ts`)
+- **Constants**: UPPERCASE (e.g., `ENCRYPTION_CHAPTER_KEY`)
+- **Boolean variables**: Start with verbs (e.g., `isLoading`, `hasError`, `canDelete`)
+
+## Functions
+- Write short functions with single purpose (< 20 instructions)
+- Use verbs for function names (e.g., `getComics`, `updateUser`)
+- Boolean functions: `isX`, `hasX`, `canX` (e.g., `isAuthenticated`)
+- Action functions: `executeX`, `saveX` (e.g., `saveComic`)
+- Avoid nesting blocks with early returns and utility functions
+- Use higher-order functions (map, filter, reduce)
+- Use arrow functions for simple functions (< 3 instructions)
+- Use default parameters instead of null/undefined checks
+
+## Data Types
+- Don't abuse primitive types, encapsulate in composite types
+- Use `readonly` for immutable data
+- Use `as const` for literal constants
+- Create interfaces for object contracts
+
+## Classes
+- Follow SOLID principles
+- Prefer composition over inheritance
+- Write small classes (< 200 instructions, < 10 public methods)
+- Declare interfaces to define contracts
+
+## Error Handling
+- Use exceptions for unexpected errors
+- Catch exceptions to fix problems, add context, or use global handler
+
+## Examples from Codebase
+```typescript
+// Good: Typed function with clear naming
+export const getComics = async (query: QueryComics): Promise<Comic[]> => {
+  const result = await backendService.get<Comic[]>('/comics', query);
+  if (result.kind === 'ok') {
+    return result.data;
+  }
+  throw new Error(formatError(result));
+};
+
+// Good: Boolean variable naming
+const { isLoading, hasError } = useComics(query);
+
+// Good: Interface definition
+export interface Comic {
+  id: number;
+  title: string;
+  authors: Author[];
+  // ...
+}
+```
+description:
+globs:
+alwaysApply: false
+---

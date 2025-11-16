@@ -1,0 +1,142 @@
+# Internationalization (i18n) Guidelines
+
+## Setup
+The project uses `i18next` with `react-i18next` for internationalization. The configuration is in [locales/i18n.ts](mdc:yuri-garden/src/locales/i18n.ts).
+
+## Supported Languages
+- Vietnamese (vi) - Default language
+- English (en) - Secondary language
+
+## Translation Files
+Translation files are located in `src/locales/`:
+- `en.json` - English translations
+- `vi.json` - Vietnamese translations
+
+## Usage Patterns
+
+### Basic Translation
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const Component = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <h1>{t('common.title')}</h1>
+      <p>{t('common.description')}</p>
+    </div>
+  );
+};
+```
+
+### Translation with Variables
+```typescript
+const Component = ({ userName }: { userName: string }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <p>{t('user.welcome', { name: userName })}</p>
+      <p>{t('comics.totalCount', { count: 42 })}</p>
+    </div>
+  );
+};
+```
+
+### Translation Keys Pattern
+Use nested keys for better organization:
+```json
+{
+  "common": {
+    "title": "Yuri Garden",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "comics": {
+    "title": "Comics",
+    "totalCount": "{{count}} comics found",
+    "status": {
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "hiatus": "Hiatus"
+    }
+  },
+  "user": {
+    "welcome": "Welcome, {{name}}!",
+    "profile": "Profile",
+    "settings": "Settings"
+  }
+}
+```
+
+### Translation Utilities
+Use the `translations` object for type-safe translations:
+```typescript
+import { translations } from '@/locales/translations';
+
+// Type-safe translation key
+const message = t(translations.updateStatus.success);
+```
+
+## Language Switching
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const LanguageSwitcher = () => {
+  const { i18n } = useTranslation();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+
+  return (
+    <div>
+      <button onClick={() => changeLanguage('vi')}>Tiếng Việt</button>
+      <button onClick={() => changeLanguage('en')}>English</button>
+    </div>
+  );
+};
+```
+
+## User Language Preferences
+The app respects user language preferences from settings:
+```typescript
+const { data: userSetting } = useUserSettings(user?.id ?? 0);
+
+useEffect(() => {
+  if (userSetting?.language) {
+    i18n.changeLanguage(userSetting.language);
+  }
+}, [userSetting]);
+```
+
+## Translation Best Practices
+- Use descriptive, nested keys
+- Keep translations consistent across languages
+- Use variables for dynamic content
+- Avoid hardcoded strings in components
+- Use the `translations` object for type safety
+- Test translations in both languages
+
+## Examples from Codebase
+```typescript
+// Good: Using translation utilities
+import { translations } from '@/locales/translations';
+
+toast.success(t(translations.updateStatus.success), {
+  description: t(translations.updateStatus.success),
+});
+
+// Good: Translation with variables
+const errorMessage = t(translations.updateStatus.error, {
+  error: formatError(error)
+});
+
+// Good: Nested translation keys
+const statusText = t(`comics.status.${comic.status}`);
+```
+description:
+globs:
+alwaysApply: false
+---

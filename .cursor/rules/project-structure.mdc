@@ -1,0 +1,64 @@
+# Yuri Garden Project Structure
+
+## Overview
+Yuri Garden is a full-stack manga/comic reading platform with a React frontend and NestJS backend. The project follows a feature-based architecture with clear separation of concerns.
+
+## Frontend Structure (yuri-garden/)
+The main entry point is [main.tsx](mdc:yuri-garden/src/main.tsx) which sets up:
+- React Query for state management
+- Firebase authentication
+- Internationalization (i18n)
+- Theme management
+- Toast notifications
+
+### Key Directories:
+- **src/features/**: Feature-based modules (comics, user, teams, etc.)
+- **src/pages/**: Route components organized by feature
+- **src/components/**: Reusable UI components
+- **src/services/**: API services and external integrations
+- **src/hooks/**: Custom React hooks
+- **src/lib/**: Utility functions and configurations
+- **src/locales/**: Internationalization files
+
+### Feature Module Pattern:
+Each feature follows this structure:
+```
+features/[feature]/
+├── api/          # API calls
+├── components/   # Feature-specific components
+├── hooks/        # Feature-specific hooks
+└── type.ts       # TypeScript types
+```
+
+## Backend Structure (yuri-garden-be/)
+The backend uses NestJS with TypeORM and follows a modular architecture.
+
+### Key Directories:
+- **src/modules/**: Feature modules (comics, users, teams, etc.)
+- **src/app/**: Global middleware, guards, and interceptors
+- **src/configs/**: Configuration files
+- **src/common/**: Shared utilities and services
+
+### Module Pattern:
+Each module follows this structure:
+```
+modules/[feature]/
+├── entities/     # TypeORM entities
+├── dtos/         # Data Transfer Objects
+├── docs/         # API documentation
+├── [feature].controller.ts
+├── [feature].service.ts
+└── [feature].module.ts
+```
+
+## Technology Stack
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Radix UI
+- **Backend**: NestJS, TypeScript, TypeORM, PostgreSQL
+- **State Management**: React Query, Zustand
+- **Authentication**: Firebase
+- **Internationalization**: i18next
+- **UI Components**: Radix UI + shadcn/ui
+description:
+globs:
+alwaysApply: false
+---

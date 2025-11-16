@@ -1,0 +1,118 @@
+# React Patterns and Conventions
+
+## Component Structure
+- Use functional components with hooks
+- Export components as default exports
+- Use TypeScript for all components
+- Follow the feature-based organization pattern
+
+## File Organization
+```
+components/
+├── ui/           # Reusable UI components (shadcn/ui style)
+├── [Feature]/    # Feature-specific components
+└── index.ts      # Barrel exports
+```
+
+## Component Patterns
+
+### 1. Feature Components
+- Place in `src/features/[feature]/components/`
+- Use PascalCase for component names
+- Export from `index.ts` for clean imports
+
+### 2. UI Components
+- Use shadcn/ui pattern with Radix UI primitives
+- Implement `cn()` utility for class merging
+- Use `class-variance-authority` for variants
+- Forward refs when needed
+
+### 3. Page Components
+- Place in `src/pages/[Feature]/`
+- Use lazy loading for route components
+- Handle loading states with Suspense
+
+## Hooks Patterns
+
+### Custom Hooks
+- Place in `src/features/[feature]/hooks/` or `src/hooks/`
+- Use `use` prefix (e.g., `useComics`, `useUser`)
+- Return objects with descriptive property names
+- Handle loading, error, and data states
+
+### React Query Hooks
+```typescript
+// Query hooks
+export const useComics = (query: QueryComics, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['comics', query],
+    queryFn: () => getComics(query),
+    staleTime: 1000 * 60 * 60, // 1 hour
+    enabled,
+  });
+};
+
+// Mutation hooks
+export const useUpdateComic = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, comic }) => updateComic(id, comic),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['comic', id] });
+    },
+  });
+};
+```
+
+## State Management
+
+### Zustand Stores
+- Use for global state (user, theme, etc.)
+- Follow the pattern from [user store](mdc:yuri-garden/src/features/user/hooks/index.ts)
+- Use `useShallow` for performance optimization
+
+### React Query
+- Use for server state management
+- Implement proper cache invalidation
+- Use optimistic updates when appropriate
+
+## Routing
+- Use React Router v7
+- Implement lazy loading for all routes
+- Use nested routes with `Outlet`
+- Handle 404 with catch-all route
+
+## Examples from Codebase
+```typescript
+// Good: Feature component structure
+const ComicCard = ({ comic }: { comic: Comic }) => {
+  const { data, isLoading } = useComic(comic.id);
+
+  if (isLoading) return <Loading />;
+
+  return (
+    <div className="comic-card">
+      <img src={comic.thumbnail} alt={comic.title} />
+      <h3>{comic.title}</h3>
+    </div>
+  );
+};
+
+// Good: UI component with variants
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+```
+description:
+globs:
+alwaysApply: false
+---

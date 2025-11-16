@@ -1,0 +1,118 @@
+# API Patterns and Conventions
+
+## API Service Structure
+The project uses a centralized API service pattern with Apisauce for HTTP requests.
+
+## Base API Class
+The main API class is defined in [services/api/index.ts](mdc:yuri-garden/src/services/api/index.ts) and provides:
+- Standardized error handling
+- Data encryption/decryption
+- Type-safe responses
+- File upload/download capabilities
+
+## API Response Pattern
+All API responses follow this pattern:
+```typescript
+type ApiResponse<T> = { kind: 'ok'; data: T } | ApiProblems;
+```
+
+## Feature API Organization
+Each feature should have its API functions in `src/features/[feature]/api/index.ts`:
+
+### Query Functions
+```typescript
+export const getComics = async (query: QueryComics): Promise<{
+  comics: Record<string, Comic>;
+  totalPages?: number;
+}> => {
+  const result = await backendService.get<{
+    comics: Comic[];
+    totalPages: number;
+  }>('/comics', query);
+
+  if (result.kind === 'ok') {
+    return {
+      comics: result.data.comics.reduce((acc, comic) => {
+        acc[comic.id.toString()] = comic;
+        return acc;
+      }, {} as Record<string, Comic>),
+      totalPages: result.data.totalPages,
+    };
+  }
+  throw new Error(formatError(result));
+};
+```
+
+### Mutation Functions
+```typescript
+export const updateComic = async (
+  id: number,
+  comic: Partial<ComicUpdate>
+): Promise<Comic> => {
+  const result = await backendService.put<Comic>(`/comics/${id}`, comic);
+  if (result.kind === 'ok') {
+    return result.data;
+  }
+  throw new Error(formatError(result));
+};
+```
+
+## Error Handling
+- Use `formatError` utility for consistent error messages
+- Throw errors for non-ok responses
+- Handle specific error types (unauthorized, forbidden, etc.)
+
+## File Upload/Download
+```typescript
+// Single file upload
+export const uploadImage = async (file: File): Promise<UploadResponse> => {
+  const result = await backendService.upload<UploadResponse>('/files/upload', file);
+  if (result.kind === 'ok') {
+    return result.data;
+  }
+  throw new Error(formatError(result));
+};
+
+// Multiple files upload
+export const uploadImages = async (files: File[]): Promise<UploadResponse[]> => {
+  const result = await backendService.uploadFiles<UploadResponse[]>('/files/upload-multiple', files);
+  if (result.kind === 'ok') {
+    return result.data;
+  }
+  throw new Error(formatError(result));
+};
+```
+
+## Query Parameters
+- Use typed query objects for API parameters
+- Define query types in feature's `type.ts`
+- Use optional parameters for filters and pagination
+
+## Examples from Codebase
+```typescript
+// Good: Typed query parameters
+export type QueryComics = {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: string;
+  r18?: boolean;
+  genre?: string;
+  sort?: string;
+  allowR18?: boolean;
+  full?: boolean;
+};
+
+// Good: API function with proper typing
+export const getComic = async (id: number): Promise<Comic> => {
+  const result = await backendService.get<Comic>(`/comics/${id}`);
+  if (result.kind === 'ok') {
+    return result.data;
+  }
+  throw new Error(formatError(result));
+};
+```
+description:
+globs:
+alwaysApply: false
+---

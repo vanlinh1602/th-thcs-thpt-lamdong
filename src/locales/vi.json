@@ -1,0 +1,80 @@
+{
+  "appName": "Xbot Reports",
+  "auth": {
+    "sendResetLink": "Gửi liên kết khôi phục mật khẩu",
+    "backToLogin": "Quay lại đăng nhập",
+    "permissionDenied": "Bạn không có quyền truy cập",
+    "permissionDeniedDesc": "Bạn không có quyền truy cập trang này. Vui lòng đăng nhập hoặc liên hệ admin để được hỗ trợ.",
+    "messages": {
+      "sentToEmail": "Liên kết khôi phục mật khẩu đã được gửi đến email của bạn",
+      "checkSpam": "Vui lòng kiểm tra thư rác nếu bạn không nhận được email",
+      "inputEmail": "Vui lòng nhập email của bạn"
+    }
+  },
+  "errors": {
+    "title": "Lỗi",
+    "messages": {
+      "invalidEmail": "Email không hợp lệ",
+      "passwordMismatch": "Mật khẩu không khớp",
+      "agreeTerms": "Bạn phải đồng ý với các điều khoản và điều kiện",
+      "fieldRequired": "Thông tin này là bắt buộc: {{field}}",
+      "missingFields": "Thiếu thông tin, vui lòng điền đầy đủ các thông tin bắc buộc",
+      "dateInThePast": "Ngày lên lịch phải lớn hơn ngày hiện tại",
+      "uploadFailed": "Tải lên thất bại",
+      "reason": "Vui lòng nhập lý do"
+    }
+  },
+  "success": {
+    "title": "Thành công",
+    "messages": {
+      "update": "Cập nhật thành công",
+      "delete": "Xóa thành công",
+      "create": "Tạo thành công"
+    }
+  },
+  "pages": {
+    "dashboard": "Bảng điều khiển"
+  },
+  "empty": {
+    "title": "Không có dữ liệu",
+    "description": "Chưa có dữ liệu nào, hãy thêm dữ liệu mới"
+  },
+  "actions": {
+    "apply": "Áp dụng",
+    "cancel": "Hủy bỏ",
+    "clearAll": "Xóa tất cả",
+    "edit": "Chỉnh sửa",
+    "save": "Lưu",
+    "replace": "Thay thế",
+    "continue": "Tiếp tục",
+    "back": "Quay lại",
+    "confirm": "Xác nhận",
+    "add": "Thêm",
+    "delete": "Xóa",
+    "refresh": "Làm mới",
+    "removeAll": "Xóa tất cả",
+    "change": "Thay đổi",
+    "search": "Tìm kiếm",
+    "close": "Đóng",
+    "backToHome": "Quay lại trang chủ"
+  },
+  "logout": "Đăng xuất",
+  "admin": "Quản trị",
+  "date": "Ngày",
+  "time": "Giờ",
+  "and": "và",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+  "registerDesc": "Tham gia cộng đồng yêu thích truyện tranh của chúng tôi",
+  "welcome": "Chào mừng trở lại",
+  "welcomeDesc": "Đăng nhập vào tài khoản của bạn để tiếp tục đọc truyện yêu thích",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "forgotPassword": "Quên mật khẩu",
+  "orContinueWith": "Hoặc tiếp tục với",
+  "createAccount": "Tạo tài khoản",
+  "agreeTerms": "Đồng ý với",
+  "termsOfService": "Điều khoản dịch vụ",
+  "privacyPolicy": "Chính sách bảo mật"
+}

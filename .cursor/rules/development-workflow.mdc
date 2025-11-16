@@ -1,0 +1,167 @@
+# Development Workflow Guidelines
+
+## Project Setup
+The project uses modern development tools and follows best practices for code quality and maintainability.
+
+## Package Management
+- **Frontend**: Uses Bun as package manager
+- **Backend**: Uses npm/yarn
+- Install dependencies with `bun install` (frontend) or `npm install` (backend)
+
+## Development Scripts
+
+### Frontend (yuri-garden/)
+```bash
+# Development
+bun run dev          # Start development server
+bun run build        # Build for production
+bun run build:qa     # Build for QA environment
+bun run build:prod   # Build for production environment
+bun run lint         # Run ESLint
+bun run preview      # Preview production build
+```
+
+### Backend (yuri-garden-be/)
+```bash
+# Development
+npm run dev          # Start development server with watch
+npm run start        # Start production server
+npm run build        # Build the application
+npm run lint         # Run ESLint with auto-fix
+npm run test         # Run unit tests
+npm run test:e2e     # Run end-to-end tests
+```
+
+## Code Quality Tools
+
+### ESLint Configuration
+- Uses modern ESLint flat config
+- Includes TypeScript, React, and import sorting rules
+- Auto-fixes available with `--fix` flag
+- Configured for both frontend and backend
+
+### TypeScript Configuration
+- Strict TypeScript configuration
+- Path mapping for clean imports
+- Separate configs for app and build
+
+## Testing Strategy
+
+### Frontend Testing
+- Use Jest for unit testing
+- Test React components with React Testing Library
+- Test custom hooks in isolation
+- Mock API calls and external dependencies
+
+### Backend Testing
+- Use Jest for unit and integration tests
+- Test controllers, services, and entities
+- Use supertest for API endpoint testing
+- Mock external services and database calls
+
+### Testing Patterns
+```typescript
+// Frontend component test
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+);
+
+test('renders comic title', () => {
+  render(
+    <TestWrapper>
+      <ComicCard comic={mockComic} />
+    </TestWrapper>
+  );
+
+  expect(screen.getByText(mockComic.title)).toBeInTheDocument();
+});
+
+// Backend service test
+describe('ComicsService', () => {
+  let service: ComicsService;
+  let repository: Repository<Comics>;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        ComicsService,
+        {
+          provide: getRepositoryToken(Comics),
+          useValue: {
+            find: jest.fn(),
+            findOne: jest.fn(),
+            save: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<ComicsService>(ComicsService);
+    repository = module.get<Repository<Comics>>(getRepositoryToken(Comics));
+  });
+
+  it('should find all comics', async () => {
+    const mockComics = [mockComic];
+    jest.spyOn(repository, 'find').mockResolvedValue(mockComics);
+
+    const result = await service.findAll({ page: 1, limit: 10 });
+
+    expect(result.comics).toEqual(mockComics);
+  });
+});
+```
+
+## Git Workflow
+- Use descriptive commit messages
+- Follow conventional commit format
+- Create feature branches for new development
+- Use pull requests for code review
+- Keep commits atomic and focused
+
+## Environment Configuration
+- Use `.env` files for environment variables
+- Separate configs for development, QA, and production
+- Never commit sensitive data to version control
+- Use environment-specific build configurations
+
+## Performance Considerations
+- Implement code splitting with lazy loading
+- Use React Query for efficient data fetching
+- Optimize bundle size with tree shaking
+- Implement proper caching strategies
+- Monitor performance metrics
+
+## Security Best Practices
+- Validate all user inputs
+- Implement proper authentication and authorization
+- Use HTTPS in production
+- Sanitize data before database operations
+- Follow OWASP security guidelines
+
+## Deployment
+- Use Docker for containerization
+- Implement CI/CD pipelines
+- Use environment-specific configurations
+- Monitor application health and performance
+- Implement proper logging and error tracking
+
+## Code Review Checklist
+- [ ] Code follows project conventions
+- [ ] TypeScript types are properly defined
+- [ ] Tests are included and passing
+- [ ] Error handling is implemented
+- [ ] Performance considerations are addressed
+- [ ] Security best practices are followed
+- [ ] Documentation is updated if needed
+- [ ] Internationalization is properly implemented
+description:
+globs:
+alwaysApply: false
+---
