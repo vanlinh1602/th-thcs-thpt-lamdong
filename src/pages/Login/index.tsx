@@ -93,7 +93,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         <div className="rounded-3xl border border-gray-200 shadow-sm bg-white p-6 md:p-8">
           <div className="text-center text-xl font-bold text-gray-500 mb-2">
-            Hệ thống thống kê Mầm non Lâm Đồng
+            Hệ thống thống kê Mầm Lâm Đồng
           </div>
           <div className="flex flex-col items-center gap-3 mb-6">
             <img className="w-20" src="logo_full.png" />
